@@ -1,0 +1,32 @@
+- name: Run custom module
+  hosts: localhost
+  gather_facts: no
+  vars:
+    username: "admin"
+    password: "RapidKrill3$"
+    ip: "13.38.32.96"
+    port: 22259
+    blueprint_name: "apstra-pod1"
+  tasks:
+    - name: Execute custom module
+      get_api_token:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        ip: "{{ ip }}"
+        port: "{{ port }}"
+      register: result
+    - name: Print result
+      debug:
+        var: result.token
+
+    - name: Get all blueprint information
+      get_apstra_blueprints:
+        blueprint_name: "{{ blueprint_name }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        ip: "{{ ip }}"
+        port: "{{ port }}"
+      register: result
+    - name: Print result
+      debug:
+        var: result.blueprint_information.id, result.blueprint_information.design
