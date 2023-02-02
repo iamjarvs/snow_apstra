@@ -8,8 +8,8 @@
         name: "{{ package_name }}"
         state: present
 
-    - name: Install roles from Ansible Galaxy
-      command: "ansible-galaxy collection install servicenow.itsm"
+    # - name: Install roles from Ansible Galaxy
+    #   command: "ansible-galaxy collection install servicenow.itsm"
 
 
   roles:
