@@ -6,10 +6,7 @@
     - name: Install pip package
       pip:
         name: "{{ package_name }}"
-        state: present 
-  vars:
-    package_name: "apstra-api-python"
-
+        state: present
   roles:
     - getBlueprintInfo
   vars:
@@ -18,3 +15,4 @@
     ip: "13.38.32.96"
     port: 22259
     blueprint_name: "apstra-pod1"
+    package_name: "apstra-api-python"
