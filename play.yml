@@ -1,0 +1,11 @@
+- name: Run my role
+  hosts: localhost
+  gather_facts: no
+  roles:
+    - getBlueprintInfo
+  vars:
+    username: "admin"
+    password: "RapidKrill3$"
+    ip: "13.38.32.96"
+    port: 22259
+    blueprint_name: "apstra-pod1"
