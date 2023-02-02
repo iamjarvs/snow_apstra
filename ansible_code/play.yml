@@ -2,12 +2,11 @@
   hosts: localhost
   gather_facts: no
 
-  tasks:
+  pre-tasks:
     - name: Install pip package
       pip:
         name: "{{ package_name }}"
-        state: present
-        
+        state: present 
   vars:
     package_name: "apstra-api-python"
 
