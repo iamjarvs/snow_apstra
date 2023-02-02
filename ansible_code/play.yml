@@ -2,7 +2,7 @@
   hosts: localhost
   gather_facts: no
 
-  pre-tasks:
+  pre_tasks:
     - name: Install pip package
       pip:
         name: "{{ package_name }}"
