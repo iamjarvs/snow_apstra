@@ -34,16 +34,16 @@
     list: "to_create_data.data"
     package_name: "apstra-api-python"
 
-  # tasks:
-  #   - name: Retrieve incident info
-  #     servicenow.itsm.incident_info:
-  #       instance:
-  #         host: "{{ servicenow_instance }}"
-  #         username: "{{ servicenow_user }}"
-  #         password: "{{ servicenow_password }}"
-  #       # number: "{{ incident_number }}"
-  #       sysparm_query: category=apstra_dc
-  #     register: incident_info
+  tasks:
+    - name: Retrieve incident info
+      servicenow.itsm.incident_info:
+        instance:
+          host: "{{ servicenow_instance }}"
+          username: "{{ servicenow_user }}"
+          password: "{{ servicenow_password }}"
+        # number: "{{ incident_number }}"
+        sysparm_query: category=apstra_dc
+      register: incident_info
 
   #   # - name: Display incident info
   #   #   debug:
