@@ -2,17 +2,78 @@
   hosts: localhost
   gather_facts: no
 
-  pre_tasks:
+  pre_task:
     - name: Install pip package
       pip:
         name: "{{ package_name }}"
         state: present
+
   roles:
     - getBlueprintInfo
   vars:
+  #   # username: "admin"
+  #   # password: "RapidKrill3$"
+  #   # ip: "13.38.32.96"
+  #   # port: 22259
+  #   # blueprint_name: "apstra-pod1"
+  #   # blueprint_id: "eb9b7233-730a-4e3f-9351-fdc56b67f8ad"
     username: "admin"
     password: "admin"
     ip: "172.30.92.20"
     port: 443
-    blueprint_name: "Adam_Jarvis_Multivendor_SE_Demo_2ce34943cd0f - evpn-sonicvs_nxosv-virtual"
+    blueprint_name: "Lab-DC-1"
+    blueprint_id: "d0cad657-4e74-4872-a889-2bd202562f5c"
+    servicenow_instance: "https://dev83904.service-now.com/"
+    servicenow_user: "api"
+    servicenow_password: "z5Ma*3;V,_$cQn}@A(!,zun=afyd^(iOQ[m%[@MWyj7w*YOu@>Ahf![R]tPZGMFD4=-(>bF]h(kfbBXYS0CHVXu#CCZ672N]pLPA"
+    incident_number: "INC0010009"
+    list: "to_create_data.data"
     package_name: "apstra-api-python"
+
+  tasks:
+  - name: Retrieve incident info
+    servicenow.itsm.incident_info:
+      instance:
+        host: "{{ servicenow_instance }}"
+        username: "{{ servicenow_user }}"
+        password: "{{ servicenow_password }}"
+      # number: "{{ incident_number }}"
+      sysparm_query: category=apstra_dc
+    register: incident_info
+
+  # - name: Display incident info
+  #   debug:
+  #     var: incident_info
+
+  - name: copy incident to file
+    local_action: 
+      module: copy 
+      content: "{{ incident_info }}"
+      dest: ./tmp.json
+
+  - name: execute install script
+    script: snow_anomalie_check.py
+    args:
+      executable: python3
+
+
+  # - name: unflattened list
+  #   debug:
+  #     msg: "{{ item.type }} {{ item.id }} {{ item.status }}"
+  #   loop:
+  #     "{{ lookup('file', 'to_create_data.data') }}"
+
+  - name: Create incidents
+    servicenow.itsm.incident:
+      instance:
+        host: "{{ servicenow_instance }}"
+        username: "{{ servicenow_user }}"
+        password: "{{ servicenow_password }}"
+      state: new
+      caller: "{{ servicenow_user }}"
+      short_description: "{{ item.type }} {{ item.id }} {{ item.status }}"
+      description: "{{ item.type }} {{ item.id }} {{ item.status }}"
+      impact: high
+      urgency: high
+    loop:
+      "{{ lookup('file', 'to_create_data.data') }}"

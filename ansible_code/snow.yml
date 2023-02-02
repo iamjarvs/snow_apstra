@@ -1,0 +1,35 @@
+---
+- name: Retrieve incident info from ServiceNow
+  hosts: localhost
+  gather_facts: false
+  vars:
+    servicenow_instance: "https://dev83904.service-now.com/"
+    servicenow_user: "api"
+    servicenow_password: "z5Ma*3;V,_$cQn}@A(!,zun=afyd^(iOQ[m%[@MWyj7w*YOu@>Ahf![R]tPZGMFD4=-(>bF]h(kfbBXYS0CHVXu#CCZ672N]pLPA"
+    incident_number: "INC0010009"
+
+  tasks:
+  - name: Retrieve incident info
+    servicenow.itsm.incident_info:
+      instance:
+        host: "{{ servicenow_instance }}"
+        username: "{{ servicenow_user }}"
+        password: "{{ servicenow_password }}"
+      # number: "{{ incident_number }}"
+      sysparm_query: category=apstra_dc
+      
+        # - caller: = andrew.och
+
+        
+    register: incident_info
+
+  - name: Display incident info
+    debug:
+      var: incident_info
+
+  - local_action: 
+      module: copy 
+      content: "{{ incident_info }}"
+      dest: tmp.json
+
+

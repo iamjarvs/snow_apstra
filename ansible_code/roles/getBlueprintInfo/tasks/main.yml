@@ -20,3 +20,21 @@
 - name: Print result
   debug:
     var: result.blueprint_information.id, result.blueprint_information.design
+
+- name: Get all blueprint anomalieinformation
+  get_apstra_blueprint_anomalie:
+    blueprint_id: "{{ blueprint_id }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ip: "{{ ip }}"
+    port: "{{ port }}"
+  register: anomalie_result
+
+- local_action: 
+    module: copy 
+    content: "{{ anomalie_result }}"
+    dest: anomalie_result.json
+
+- name: Print result
+  debug:
+    var: anomalie_result
