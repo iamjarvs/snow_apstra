@@ -9,9 +9,8 @@
         state: present
 
     - name: Install roles from Ansible Galaxy
-      command: "ansible-galaxy install {{ role_name }}"
-      args:
-        creates: "servicenow.itsm.now"
+      command: "ansible-galaxy install servicenow.itsm"
+
 
   roles:
     - getBlueprintInfo
@@ -36,30 +35,30 @@
     package_name: "apstra-api-python"
 
   tasks:
-  - name: Retrieve incident info
-    servicenow.itsm.incident_info:
-      instance:
-        host: "{{ servicenow_instance }}"
-        username: "{{ servicenow_user }}"
-        password: "{{ servicenow_password }}"
-      # number: "{{ incident_number }}"
-      sysparm_query: category=apstra_dc
-    register: incident_info
+    - name: Retrieve incident info
+      servicenow.itsm.incident_info:
+        instance:
+          host: "{{ servicenow_instance }}"
+          username: "{{ servicenow_user }}"
+          password: "{{ servicenow_password }}"
+        # number: "{{ incident_number }}"
+        sysparm_query: category=apstra_dc
+      register: incident_info
 
-  # - name: Display incident info
-  #   debug:
-  #     var: incident_info
+    # - name: Display incident info
+    #   debug:
+    #     var: incident_info
 
-  - name: copy incident to file
-    local_action: 
-      module: copy 
-      content: "{{ incident_info }}"
-      dest: ./tmp.json
+    - name: copy incident to file
+      local_action: 
+        module: copy 
+        content: "{{ incident_info }}"
+        dest: ./tmp.json
 
-  - name: execute install script
-    script: snow_anomalie_check.py
-    args:
-      executable: python3
+    - name: execute install script
+      script: snow_anomalie_check.py
+      args:
+        executable: python3
 
 
   # - name: unflattened list
