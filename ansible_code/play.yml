@@ -1,6 +1,16 @@
 - name: Run my role
   hosts: localhost
   gather_facts: no
+
+  tasks:
+    - name: Install pip package
+      pip:
+        name: "{{ package_name }}"
+        state: present
+        
+  vars:
+    package_name: "apstra-api-python"
+
   roles:
     - getBlueprintInfo
   vars:
