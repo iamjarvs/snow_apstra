@@ -8,6 +8,11 @@
         name: "{{ package_name }}"
         state: present
 
+    - name: Install roles from Ansible Galaxy
+      command: "ansible-galaxy install {{ role_name }}"
+      args:
+        creates: "servicenow.itsm.now"
+
   roles:
     - getBlueprintInfo
   vars:
