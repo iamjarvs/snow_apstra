@@ -11,7 +11,6 @@ import logging
 import json
 from typing import Dict
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.apstra_utils import get_aos_blueprints
 from aos.client import AosClient
 # Disable urllib3 warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
