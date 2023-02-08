@@ -1,6 +1,11 @@
 - name: Run my role
   hosts: localhost
   gather_facts: no
+  pre_tasks:
+    - name: Install pip package
+      pip:
+        name: "apstra-api-python"
+        state: present
   roles:
     - create_tenant
   vars:
