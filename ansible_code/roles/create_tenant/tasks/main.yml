@@ -1,0 +1,67 @@
+- name: Get IP Pools ID
+  get_apstra_ip_pool_id:
+    ip_pool_name: "{{ ip_pool_name }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ip: "{{ ip }}"
+    port: "{{ port }}"
+  register: ip_pool_id
+
+- name: Print result
+  debug:
+    var: ip_pool_id.ip_pool_id
+
+- name: Get all blueprint information
+  get_apstra_blueprint_id:
+    blueprint_name: "{{ blueprint_name }}" 
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ip: "{{ ip }}"
+    port: "{{ port }}"
+  register: blueprint_id
+
+- name: Print result
+  debug:
+    var: blueprint_id.blueprint_id
+
+- name: Create Routing Zone
+  create_routing_zone:
+    blueprint_id: "{{ blueprint_id.blueprint_id }}"
+    ip_pool_id: "{{ ip_pool_id.ip_pool_id }}"
+    routing_zone_name: "{{ routing_zone_name }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ip: "{{ ip }}"
+    port: "{{ port }}"
+  register: result
+
+- name: Print result
+  debug:
+    var: result.routing_zone_information
+
+- name: Create Virtual Network
+  create_virtual_network:
+    blueprint_id: "{{ blueprint_id.blueprint_id }}"
+    virtual_network_name: "{{ item.1.name }}"
+    ipv4_subnet: "{{ item.1.ipv4_subnet }}"
+    ipv4_gateway: "{{ item.1.ipv4_gateway }}"
+    routing_zone_name: "{{ routing_zone_name }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ip: "{{ ip }}"
+    port: "{{ port }}"
+  with_subelements:
+    - "{{ virtual_network_dict }}"
+    - virtual_network
+  register: virtual_network_response
+
+- name: Print result
+  debug:
+    var: virtual_network_response
+
+# - name: Start all services
+#   debug:
+#     msg: "Start {{ item.1.name }}, {{ item.1.ipv4_subnet }} {{ item.1.ipv4_gateway }}"
+#   with_subelements:
+#     - "{{ virtual_network_dict }}"
+#     - virtual_network
