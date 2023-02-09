@@ -8,23 +8,23 @@
         state: present
   roles:
     - create_tenant
-  vars:
-    username: "admin"
-    password: "admin"
-    ip: "172.30.92.20"
-    port: 443
-    blueprint_name: "Lab-DC-1"
-    ip_pool_name: "Cust-1-IPs"
-    routing_zone_name: "test-pb"
-    virtual_network_dict:
-      - virtual_network:
-          - name: "vn100"
-            ipv4_subnet: "10.10.100.0/24"
-            ipv4_gateway: "10.10.100.1"
-      - virtual_network:
-          - name: "vn200"
-            ipv4_subnet: "10.10.200.0/24"
-            ipv4_gateway: "10.10.200.1"    
+#   vars:
+#     username: "admin"
+#     password: "admin"
+#     ip: "172.30.92.20"
+#     port: 443
+#     blueprint_name: "Lab-DC-1"
+#     ip_pool_name: "Cust-1-IPs"
+#     routing_zone_name: "test-pb"
+#     virtual_network_dict:
+#       - virtual_network:
+#           - name: "vn100"
+#             ipv4_subnet: "10.10.100.0/24"
+#             ipv4_gateway: "10.10.100.1"
+#       - virtual_network:
+#           - name: "vn200"
+#             ipv4_subnet: "10.10.200.0/24"
+#             ipv4_gateway: "10.10.200.1"    
     
     
     
