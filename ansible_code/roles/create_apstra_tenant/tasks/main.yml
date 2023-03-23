@@ -229,9 +229,18 @@
       AUTHTOKEN: "{{ rest_api_token }}"
     body_format: "json"
     body:
-      virtual_gateway_ipv4_enabled: "{{ virtual_gateway_ipv4_enabled }}"
-      vn_id: "{{ vn_id }}"
+      virtual_gateway_ipv4_enabled: "{{ item.virtual_gateway_ipv4_enabled }}"
+      vn_id: "{{ item.vn_id }}"
       vn_type: vxlan
+      virtual_gateway_ipv4: "{{ item.virtual_gateway_ipv4 }}"
+      bound_to: "{{ bound_to }}"
+      ipv4_subnet: "{{ item.ipv4_subnet }}"
+      label: "{{ item.virtual_network_name }}"
+      ipv4_enabled: "{{ item.ipv4_enabled }}"
+      create_policy_untagged: "{{ item.create_ct_policy }}"
+      security_zone_id: "{{ vrf_id.json.id }}"
+      dhcp_service: "{{ item.dhcp_service }}"
+      create_policy_tagged: "{{ item.create_ct_policy }}"
       # svi_ips:
       #   - ipv4_addr: null
       #     ipv6_addr: null
@@ -263,19 +272,10 @@
       # rt_policy:
       #   import_RTs: null
       #   export_RTs: null
-      virtual_gateway_ipv4: "{{ virtual_gateway_ipv4 }}"
-      bound_to: "{{ bound_to }}"
-      ipv4_subnet: "{{ ipv4_subnet }}"
-      label: "{{ label }}"
-      ipv4_enabled: "{{ ipv4_enabled }}"
-      create_policy_untagged: "{{ create_policy_untagged }}"
-      security_zone_id: "{{ vrf_id.json.id }}"
-      # security_zone_id: "{{ security_zone_id }}"vrf_id.json.id
-      dhcp_service: "{{ dhcp_service }}"
-      create_policy_tagged: "{{ create_policy_tagged }}"
     validate_certs: "{{ validate_certs }}"
     return_content: true
     status_code: 201
+  loop: "{{ virtual_networks }}"
   register: vni_id
 
 - name: VNI ID

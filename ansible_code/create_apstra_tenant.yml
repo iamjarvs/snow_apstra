@@ -20,13 +20,20 @@
 
     # routing_zone_name: "aj-api-test-vrf"
 
-    # label: api-test
-    # virtual_gateway_ipv4_enabled: true
-    # vn_id: '20001'
-    # virtual_gateway_ipv4: 50.50.50.1
-    # ipv4_subnet: 50.50.50.0/24
-    # ipv4_enabled: true
-    # create_policy_untagged: true
-    # security_zone_id: _ceVNgR9HgzxYXVJY5A
-    # dhcp_service: dhcpServiceDisabled
-    # create_policy_tagged: true
+    # virtual_networks:  
+    #   - virtual_network_name: "api-test"
+    #     virtual_gateway_ipv4_enabled: true
+    #     vn_id: '20001'
+    #     virtual_gateway_ipv4: "50.50.50.1"
+    #     ipv4_subnet: "50.50.50.0/24"
+    #     ipv4_enabled: true
+    #     create_ct_policy: true
+    #     dhcp_service: "dhcpServiceDisabled"
+    #   - virtual_network_name: "api-test_1"
+    #     virtual_gateway_ipv4_enabled: true
+    #     vn_id: '20002'
+    #     virtual_gateway_ipv4: "50.50.52.1"
+    #     ipv4_subnet: "50.50.52.0/24"
+    #     ipv4_enabled: true
+    #     create_ct_policy: true
+    #     dhcp_service: "dhcpServiceDisabled"
