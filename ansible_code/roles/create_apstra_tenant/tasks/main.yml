@@ -1,0 +1,291 @@
+- name: Authenticate to REST API and retrieve token
+  ansible.builtin.uri:
+    url: "https://{{ apstra_address }}/api/aaa/login"
+    method: POST
+    body_format: json
+    body:
+      username: "{{ apstra_username }}"
+      password: "{{ apstra_password }}"
+    validate_certs: "{{ validate_certs }}"
+    return_content: true
+    status_code: 201
+  register: login_response
+
+- name: Parse token from response
+  set_fact:
+    rest_api_token: "{{ login_response.json.token }}"
+
+- name: Print result
+  debug:
+    var: login_response.json.token
+
+
+# # Create IP Pools
+# - name: Create IP Pool
+#   ansible.builtin.uri:
+#     url: "https://{{ apstra_address }}/api/resources/ip-pools"
+#     method: POST
+#     headers:
+#       Content-Type: application/json
+#       Accept: application/json
+#       AUTHTOKEN: "{{ rest_api_token }}"
+#     body_format: "json"
+#     body:
+#       display_name: "{{ ip_pool_name }}"
+#       subnets:
+#         - network: "{{ ip_pool_subnet }}"
+#     validate_certs: "{{ validate_certs }}"
+#     return_content: true
+#     status_code: 202
+#   register: ip_pools
+
+# - name: New Pool ID
+#   set_fact:
+#     new_pool_id: "{{ ip_pools.json.id }}"
+
+# - name: Print result
+#   debug:
+#     var: new_pool_id
+
+
+# # Get BP ID from Name
+# - name: Get BP ID from Name
+#   ansible.builtin.uri:
+#     url: "https://{{ apstra_address }}/api/blueprints"
+#     method: GET
+#     headers:
+#       Content-Type: application/json
+#       Accept: application/json
+#       AUTHTOKEN: "{{ rest_api_token }}"
+#     validate_certs: "{{ validate_certs }}"
+#     return_content: true
+#     status_code: 200
+#   register: bp_info
+
+# - name: Print result
+#   debug:
+#     var: bp_info.json
+
+
+# Create Routing Zone
+- name: Create Routing Zone
+  ansible.builtin.uri:
+    url: "https://{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/security-zones"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      AUTHTOKEN: "{{ rest_api_token }}"
+    body_format: "json"
+    body:
+      vrf_name: "{{ routing_zone_name }}"
+      sz_type: "evpn"
+      label: "{{ routing_zone_name }}"
+      # routing_policy_id: string
+      # rt_policy:
+      #   import_RTs:
+      #     - string
+      #   export_RTs:
+      #     - string
+      # vlan_id: 0
+
+    validate_certs: "{{ validate_certs }}"
+    return_content: true
+    status_code: 201
+  register: vrf_id
+
+- name: Security Zone ID
+  set_fact:
+    new_vrf_id: "{{ vrf_id.json.id }}"
+
+- name: Print result
+  debug:
+    var: vrf_id.json.id
+
+# - name: Pause for 10 seconds to build routing zone
+#   ansible.builtin.pause:
+#     seconds: 10
+
+# Add Routing Zone IP Pools
+- name: Add Routing Zone IP Pools
+  ansible.builtin.uri:
+    url: "https://{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/resource_groups/ip/sz:{{ vrf_id.json.id }}%2Cleaf_loopback_ips"
+    method: PUT
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      AUTHTOKEN: "{{ rest_api_token }}"
+    body_format: "json"
+    body:
+      pool_ids:
+        - "{{ ip_pool_id }}"
+    validate_certs: "{{ validate_certs }}"
+    return_content: true
+    status_code: 202
+
+
+  # GET VRF VNIs
+- name: GET VRF VNI Pools
+  ansible.builtin.uri:
+    url: "https://{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/resource_groups/vni/evpn_l3_vnis"
+    method: GET
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      AUTHTOKEN: "{{ rest_api_token }}"
+    validate_certs: "{{ validate_certs }}"
+    return_content: true
+    status_code: 200
+  register: vrf_vni_pool
+  
+- name: Check to see if VRF VNI pool is assingned
+  set_fact:
+    vrf_vni_pool_bol: True
+  when: vrf_vni_pool.json.pool_ids|length>0
+
+
+# - name: Print result
+#   debug:
+#     var: vrf_vni_pool_bol
+
+
+  # Add VRF VNIs (If not already assigned)
+- name: Add Routing Zone IP Pools
+  ansible.builtin.uri:
+    url: "https://{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/resource_groups/vni/evpn_l3_vnis"
+    method: PUT
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      AUTHTOKEN: "{{ rest_api_token }}"
+    body_format: "json"
+    body:
+      pool_ids:
+        - "{{ ip_pool_id }}"
+    validate_certs: "{{ validate_certs }}"
+    return_content: true
+    status_code: 202
+  when: vrf_vni_pool_bol is undefined
+
+# 
+# Get all leaf nodes
+# 
+- name: Get all leaf nodes
+  ansible.builtin.uri:
+    url: "https://{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/qe"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      AUTHTOKEN: "{{ rest_api_token }}"
+    body_format: "json"
+    body:
+      query: "match(node('system', name='leaf', role='leaf', system_type='switch'))"
+    validate_certs: "{{ validate_certs }}"
+    return_content: true
+    status_code: 200
+  register: all_leaf_nodes_query
+
+
+# 
+# Creates a list of all leaf switch node IDs
+# 
+- set_fact:
+    node_id_list: []
+
+- set_fact:
+    node_id_list:  '{{ node_id_list + [item.leaf.id] }}'
+  loop: '{{ all_leaf_nodes_query["json"]["items"] }}'
+
+- name: Print result
+  debug:
+    var: node_id_list
+
+
+# 
+# This section creates the bound_to JSON payload for the VNI creation
+# 
+- set_fact:
+    bound_to: []
+
+- set_fact:
+    bound_to:  '{{ bound_to|default([]) + [{"system_id": item}] }}'
+  loop: '{{ node_id_list }}'
+
+- name: Print result
+  debug:
+    var: bound_to
+
+# 
+# Create VXLAN Overlay Networks
+# 
+- name: Create VXLAN Overlay Networks
+  ansible.builtin.uri:
+    url: "https://{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/virtual-networks"
+    method: POST
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      AUTHTOKEN: "{{ rest_api_token }}"
+    body_format: "json"
+    body:
+      virtual_gateway_ipv4_enabled: "{{ virtual_gateway_ipv4_enabled }}"
+      vn_id: "{{ vn_id }}"
+      vn_type: vxlan
+      # svi_ips:
+      #   - ipv4_addr: null
+      #     ipv6_addr: null
+      #     system_id: ZnhZoZ8uP2dB7chR8hI
+      #     ipv4_mode: enabled
+      #     ipv6_mode: disabled
+      #   - ipv4_addr: null
+      #     ipv6_addr: null
+      #     system_id: rQWkZQ8Kq5-oJayYHG4
+      #     ipv4_mode: enabled
+      #     ipv6_mode: disabled
+      #   - ipv4_addr: null
+      #     ipv6_addr: null
+      #     system_id: JsU-1X7_bJY2l7htRbk
+      #     ipv4_mode: enabled
+      #     ipv6_mode: disabled
+      #   - ipv4_addr: null
+      #     ipv6_addr: null
+      #     system_id: 2Ckof1jVW3kML5S_57w
+      #     ipv4_mode: enabled
+      #     ipv6_mode: disabled
+      # vni_ids:
+      #   - 20001
+      # reserved_vlan_id: null
+      # virtual_gateway_ipv6: null
+      # ipv6_subnet: null
+      # virtual_gateway_ipv6_enabled: false
+      # ipv6_enabled: false
+      # rt_policy:
+      #   import_RTs: null
+      #   export_RTs: null
+      virtual_gateway_ipv4: "{{ virtual_gateway_ipv4 }}"
+      bound_to: "{{ bound_to }}"
+      ipv4_subnet: "{{ ipv4_subnet }}"
+      label: "{{ label }}"
+      ipv4_enabled: "{{ ipv4_enabled }}"
+      create_policy_untagged: "{{ create_policy_untagged }}"
+      security_zone_id: "{{ vrf_id.json.id }}"
+      # security_zone_id: "{{ security_zone_id }}"vrf_id.json.id
+      dhcp_service: "{{ dhcp_service }}"
+      create_policy_tagged: "{{ create_policy_tagged }}"
+    validate_certs: "{{ validate_certs }}"
+    return_content: true
+    status_code: 201
+  register: vni_id
+
+- name: VNI ID
+  set_fact:
+    new_pool_id: "{{ vni_id.json.id }}"
+
+- name: Print result
+  debug:
+    var: vni_id.json.id
+
+
+
+
