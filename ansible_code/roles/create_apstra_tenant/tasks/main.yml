@@ -239,7 +239,7 @@
       ipv4_enabled: "{{ item.ipv4_enabled }}"
       create_policy_untagged: "{{ item.create_ct_policy }}"
       security_zone_id: "{{ vrf_id.json.id }}"
-      dhcp_service: "{{ item.dhcp_service }}"
+      dhcp_service: "dhcpServiceDisabled"
       create_policy_tagged: "{{ item.create_ct_policy }}"
       # svi_ips:
       #   - ipv4_addr: null
