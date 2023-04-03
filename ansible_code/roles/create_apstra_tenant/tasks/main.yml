@@ -278,14 +278,5 @@
   loop: "{{ virtual_networks }}"
   register: vni_id
 
-- name: VNI ID
-  set_fact:
-    new_pool_id: "{{ vni_id.json.id }}"
-
-- name: Print result
-  debug:
-    var: vni_id.json.id
-
-
 
 
