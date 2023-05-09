@@ -7,7 +7,7 @@
   vars:
     apstra_username: "admin"
     apstra_password: "admin"
-    apstra_address: "172.30.92.20"
+    apstra_address: "172.30.54.244"
     apstra_port: 443
     validate_certs: false
     
