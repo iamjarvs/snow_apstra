@@ -229,10 +229,10 @@
       AUTHTOKEN: "{{ rest_api_token }}"
     body_format: "json"
     body:
-      virtual_gateway_ipv4_enabled: "{{ item.virtual_gateway_ipv4_enabled | default('false') }}"
-      vn_id: "{{ item.vn_id | default('') }}"
+      virtual_gateway_ipv4_enabled: "{{ item.virtual_gateway_ipv4_enabled | default(false) }}"
+      vn_id: "{{ item.vn_id | default() }}"
       vn_type: vxlan
-      virtual_gateway_ipv4: "{{ item.virtual_gateway_ipv4  | default('') }}"
+      virtual_gateway_ipv4: "{{ item.virtual_gateway_ipv4  | default() }}"
       bound_to: "{{ bound_to }}"
       ipv4_subnet: "{{ item.ipv4_subnet | default() }}"
       label: "{{ item.virtual_network_name }}"
