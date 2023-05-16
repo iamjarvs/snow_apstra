@@ -236,7 +236,7 @@
       bound_to: "{{ bound_to }}"
       ipv4_subnet: "{{ item.ipv4_subnet | default() }}"
       label: "{{ item.virtual_network_name }}"
-      ipv4_enabled: "{{ item.ipv4_enabled | bool}}"
+      ipv4_enabled: "{{ item.ipv4_enabled | default(false) | bool}}"
       create_policy_untagged: "{{ item.create_ct_policy }}"
       security_zone_id: "{{ vrf_id.json.id }}"
       dhcp_service: "dhcpServiceDisabled"
