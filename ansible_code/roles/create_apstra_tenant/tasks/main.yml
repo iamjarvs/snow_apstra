@@ -237,10 +237,10 @@
       ipv4_subnet: "{{ item.ipv4_subnet | default() }}"
       label: "{{ item.virtual_network_name }}"
       ipv4_enabled: "{{ item.ipv4_enabled | default(false) | bool}}"
-      create_policy_untagged: "{{ item.create_ct_policy }}"
+      create_policy_untagged: "{{ item.create_ct_policy | default(false) | bool }}"
       security_zone_id: "{{ vrf_id.json.id }}"
       dhcp_service: "dhcpServiceDisabled"
-      create_policy_tagged: "{{ item.create_ct_policy }}"
+      create_policy_tagged: "{{ item.create_ct_policy | default(false) | bool }}"
       # svi_ips:
       #   - ipv4_addr: null
       #     ipv6_addr: null
