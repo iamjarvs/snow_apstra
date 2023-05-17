@@ -1,7 +1,7 @@
 
 - name: Run my role
   hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   roles:
     - create_apstra_tenant
   vars:
