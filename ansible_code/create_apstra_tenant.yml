@@ -11,29 +11,3 @@
     apstra_port: 443
     validate_certs: false
     
-    # # blueprint_name: "Lab-DC-1"
-    # blueprint_id: "d0cad657-4e74-4872-a889-2bd202562f5c"
-
-    # # ip_pool_name: "aj-api-pool"
-    # # ip_pool_subnet: "10.10.10.0/24"
-    # ip_pool_id: "fc09dbe8-ad4e-4545-890d-28b98e1ac656"
-
-    # routing_zone_name: "aj-api-test-vrf"
-
-    # virtual_networks:  
-    #   - virtual_network_name: "api-test"
-    #     virtual_gateway_ipv4_enabled: true
-    #     vn_id: '20001'
-    #     virtual_gateway_ipv4: "50.50.50.1"
-    #     ipv4_subnet: "50.50.50.0/24"
-    #     ipv4_enabled: true
-    #     create_ct_policy: true
-    #     dhcp_service: "dhcpServiceDisabled"
-    #   - virtual_network_name: "api-test_1"
-    #     virtual_gateway_ipv4_enabled: true
-    #     vn_id: '20002'
-    #     virtual_gateway_ipv4: "50.50.52.1"
-    #     ipv4_subnet: "50.50.52.0/24"
-    #     ipv4_enabled: true
-    #     create_ct_policy: true
-    #     dhcp_service: "dhcpServiceDisabled"
