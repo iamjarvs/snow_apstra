@@ -291,7 +291,7 @@
       sections:
         - facts:
           - name : "Apstra Pending Changes"
-            value: "https://www.{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/uncommitted"
+            value: "https://{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/uncommitted"
           - name : "AWX Jobs"
             value: "https://172.30.54.18:8043/#/jobs"
     body_format: json
