@@ -296,5 +296,3 @@
             value: "https://172.30.54.18:8043/#/jobs"
     body_format: json
     method: POST
-    
-    https://172.30.54.20/d0cad657-4e74-4872-a889-2bd202562f5c/uncommitted
