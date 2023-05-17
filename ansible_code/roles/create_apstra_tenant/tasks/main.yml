@@ -293,6 +293,6 @@
           - name : "Apstra Pending Changes"
             value: "https://{{ apstra_address }}/#/blueprints/{{ blueprint_id }}/uncommitted"
           - name : "AWX Jobs"
-            value: "https://172.30.54.18:8043/#/jobs"
+            value: "https://172.30.54.18:8043/#/jobs/playbook/{{ awx_job_id }}/details"
     body_format: json
     method: POST
