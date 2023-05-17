@@ -282,12 +282,19 @@
   set_fact:
     teams_webhook: "https://junipernetworks.webhook.office.com/webhookb2/043edaf2-df10-4769-b1dd-263ff125a1e4@bea78b3c-4cdb-4130-854a-1d193232e5f4/IncomingWebhook/3109ec011f00477cba1b9d6296a27756/e73b492e-c255-4864-9e91-0cf509d5d73c"
 
-- name: Log lines to MS Teams
-  uri:
-    url: "{{ teams_webhook }}"
-    body:
-      "type": "AdaptiveCard"
-      "text": "{{ ansible_date_time.date }}: Tenant Created In Apstra Instance {{ apstra_address }}"
-    body_format: json
-    method: POST
+  - name: Display hostname
+    uri:
+      url: "https://junipernetworks.webhook.office.com/webhookb2/043edaf2-df10-4769-b1dd-263ff125a1e4@bea78b3c-4cdb-4130-854a-1d193232e5f4/IncomingWebhook/3109ec011f00477cba1b9d6296a27756/e73b492e-c255-4864-9e91-0cf509d5d73c"
+      body:
+        title: "New Tenant Provisioning Job: "
+        text: "A new tenant configuration has been pushed to instance {{ apstra_address }}. \n\nThis has been approaved in ServiceNow and the changes have been staged in blueprint {{ blueprint_id }}. \n\n**Please review and commit**"
+        sections:
+          - facts:
+            - name : "Apstra Pending Changes"
+              value: "https://www.{{ apstra_address }}/api/blueprints/{{ blueprint_id }}/uncommitted"
+            - name : "AWX Jobs"
+              value: "https://172.30.54.18:8043/#/jobs"
+      body_format: json
+      method: POST
+
 
