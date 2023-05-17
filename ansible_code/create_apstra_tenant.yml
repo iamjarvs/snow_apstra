@@ -10,34 +10,3 @@
     apstra_address: "172.30.54.20"
     apstra_port: 443
     validate_certs: false
-     
-  tasks:
-    - name: Print some debug information 
-      vars: 
-        msg: |
-          Module Variables ("vars"):
-          --------------------------------
-          {{ vars | to_nice_json }} 
-          
-          Environment Variables ("environment"):
-          --------------------------------
-          {{ environment | to_nice_json }} 
-          
-          GROUP NAMES Variables ("group_names"):
-          --------------------------------
-          {{ group_names | to_nice_json }}
-          
-          GROUPS Variables ("groups"):
-          --------------------------------
-          {{ groups | to_nice_json }}
-          
-          HOST Variables ("hostvars"):
-          --------------------------------
-          {{ hostvars | to_nice_json }} 
-    
-      debug: 
-        msg: "{{ msg.split('\n') }}"       
-      tags: debug_info
-
-      debug:
-        msg: "job id = {{ awx_job_id }}"
