@@ -229,9 +229,18 @@
       AUTHTOKEN: "{{ rest_api_token }}"
     body_format: "json"
     body:
-      virtual_gateway_ipv4_enabled: "{{ virtual_gateway_ipv4_enabled }}"
-      vn_id: "{{ vn_id }}"
+      virtual_gateway_ipv4_enabled: "{{ item.ipv4_enabled | default(false) | bool }}"
+      vn_id: "{{ item.vn_id | default(omit) }}"
       vn_type: vxlan
+      virtual_gateway_ipv4: "{{ item.virtual_gateway_ipv4  | default(omit) }}"
+      bound_to: "{{ bound_to }}"
+      ipv4_subnet: "{{ item.ipv4_subnet | default(omit) }}"
+      label: "{{ item.virtual_network_name }}"
+      ipv4_enabled: "{{ item.ipv4_enabled | default() | bool}}"
+      create_policy_untagged: "{{ item.create_ct_policy | default(false) | bool }}"
+      security_zone_id: "{{ vrf_id.json.id }}"
+      dhcp_service: "dhcpServiceDisabled"
+      create_policy_tagged: "{{ item.create_ct_policy | default(false) | bool }}"
       # svi_ips:
       #   - ipv4_addr: null
       #     ipv6_addr: null
@@ -263,29 +272,27 @@
       # rt_policy:
       #   import_RTs: null
       #   export_RTs: null
-      virtual_gateway_ipv4: "{{ virtual_gateway_ipv4 }}"
-      bound_to: "{{ bound_to }}"
-      ipv4_subnet: "{{ ipv4_subnet }}"
-      label: "{{ label }}"
-      ipv4_enabled: "{{ ipv4_enabled }}"
-      create_policy_untagged: "{{ create_policy_untagged }}"
-      security_zone_id: "{{ vrf_id.json.id }}"
-      # security_zone_id: "{{ security_zone_id }}"vrf_id.json.id
-      dhcp_service: "{{ dhcp_service }}"
-      create_policy_tagged: "{{ create_policy_tagged }}"
     validate_certs: "{{ validate_certs }}"
     return_content: true
     status_code: 201
+  loop: "{{ virtual_networks }}"
   register: vni_id
 
-- name: VNI ID
+- name: Teams Webhook
   set_fact:
-    new_pool_id: "{{ vni_id.json.id }}"
+    teams_webhook: "https://junipernetworks.webhook.office.com/webhookb2/043edaf2-df10-4769-b1dd-263ff125a1e4@bea78b3c-4cdb-4130-854a-1d193232e5f4/IncomingWebhook/3109ec011f00477cba1b9d6296a27756/e73b492e-c255-4864-9e91-0cf509d5d73c"
 
-- name: Print result
-  debug:
-    var: vni_id.json.id
-
-
-
-
+- name: Display hostname
+  uri:
+    url: "https://junipernetworks.webhook.office.com/webhookb2/043edaf2-df10-4769-b1dd-263ff125a1e4@bea78b3c-4cdb-4130-854a-1d193232e5f4/IncomingWebhook/3109ec011f00477cba1b9d6296a27756/e73b492e-c255-4864-9e91-0cf509d5d73c"
+    body:
+      title: "New Tenant Provisioning Job: "
+      text: "A new tenant configuration has been pushed to instance {{ apstra_address }}. \n\nThis has been approved in ServiceNow and the changes have been staged in blueprint {{ blueprint_id }}. \n\n**Please review and commit**"
+      sections:
+        - facts:
+          - name : "Apstra Pending Changes"
+            value: "https://{{ apstra_address }}/#/blueprints/{{ blueprint_id }}/uncommitted"
+          - name : "AWX Jobs"
+            value: "https://172.30.54.18:8043/#/jobs/playbook/{{ awx_job_id }}/details"
+    body_format: json
+    method: POST
